@@ -15,15 +15,16 @@ public class ConnectN {
     public static final int MAX_HEIGHT = 16;
     /**Minimum board N value.*/
     public static final int MIN_N = 4;
-    /**Board.*/
-    private Player[][] board;
     /**Board width.*/
     private int width;
     /**Board height.*/
     private int height;
-    /** Board count.*/
+    /**Board count.*/
     private int n;
-
+    /**Board.*/
+    private Player[][] board;
+    /**Start game*/
+    private boolean startGame = false;
 
     /**
      * Creates a new ConnectN board with a given width, height, and N value.
@@ -35,7 +36,7 @@ public class ConnectN {
         width = setWidth;
         height = setHeight;
         n = setN;
-        if (setWidth < MIN_WIDTH  || setWidth > MAX_WIDTH) {
+        if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             width = 0;
             n = 0;
         }
@@ -45,6 +46,7 @@ public class ConnectN {
         if (setN < MIN_N || setN > setWidth - 1 || setN > setHeight - 1) {
             n = 0;
         }
+        board = new Player[width][height];
     }
 
     /**
@@ -142,13 +144,16 @@ public class ConnectN {
      * @return true if the width was set successfully, false on error
      */
     public boolean setWidth(final int setWidth) {
+        if (startGame) {
+            return false;
+        }
         int maxDimension;
         if (setWidth > height) {
             maxDimension = setWidth;
         } else {
             maxDimension = height;
         }
-
+        //Check valid width
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             return false;
         } else if (n > maxDimension - 1) {
@@ -173,12 +178,16 @@ public class ConnectN {
      * @return true if the height was set successfully, false on error
      */
     public boolean setHeight(final int setHeight) {
+        if (startGame) {
+            return false;
+        }
         int maxDimension;
         if (width > setHeight) {
             maxDimension = width;
         } else {
             maxDimension = setHeight;
         }
+        //Check valid height
         if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             return false;
         } else if (n > maxDimension - 1) {
@@ -204,17 +213,23 @@ public class ConnectN {
      * @return true if N was set successfully, false otherwise
      */
     public boolean setN(final int newN) {
+        if (startGame) {
+            return false;
+        }
         int maxDimension;
         if (width > height) {
             maxDimension = width;
         } else {
             maxDimension = height;
         }
+        //Check N is in bounds
         if (newN < MIN_N) {
             return false;
-        } else if (width == 0 || height == 0) {
+        }
+        if (width == 0 || height == 0) {
             return false;
-        } else if (newN > maxDimension - 1) {
+        }
+        if (newN > maxDimension - 1) {
             return false;
         } else {
             n = newN;
@@ -227,7 +242,23 @@ public class ConnectN {
      * @return a copy of the current board
      */
     public Player[][] getBoard() {
-        return null;
+        if (width == 0 || height == 0) {
+            return null;
+        }
+        Player[][] copy = new Player[this.getWidth()][this.getHeight()];
+
+        for (int i = 0; i < width - 1; i++) {
+            for (int j = 0; j < height - 1; j++) {
+                if (this.getBoardAt(i, j) != null) {
+                    Player c1 = new Player(this.getBoardAt(i, j));
+                    copy[i][j] = c1;
+                } else {
+                    copy[i][j] = null;
+                }
+
+            }
+        }
+        return copy;
     }
     /**
      * Get the player at a specific board position.
@@ -236,7 +267,11 @@ public class ConnectN {
      * @return the player whose tile is at that position, or null if nobody has played at that position
      */
     public Player getBoardAt(final int getX, final int getY) {
-        return null;
+        if (getX >= 0 && getX <= board.length - 1 && getY >= 0 && getY <= board[0].length - 1) {
+            return board[getX][getY];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -247,7 +282,38 @@ public class ConnectN {
      * @return true if the move succeeds, false on error
      */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
-        return false;
+        //Fail: any board parameters remain uninitialized (width, height, N)
+        if (width == 0 || height == 0 || n  == 0) {
+            return false;
+        }
+        //Fail: the player is invalid
+        if (player.getName() == null) {
+            return false;
+        }
+        //Fail: the position is invalid for this board (out of range)
+        if ((setX < 0 || setX > board.length - 1) || (setY < 0 || setY > board[0].length - 1)) {
+            return false;
+        }
+        //Fail: the position is already taken
+        if (board[setX][setY] != null) {
+            return false;
+        }
+        if (setY == 0) {
+            board[setX][setY] = player;
+            startGame = true;
+        } else if (board[setX][setY - 1] == null) {
+            return false;
+        }
+        /**for (int i = 0; i < width; i++) {
+            for (int j = 0; j < setY; j++) {
+                if (board[i][j] == null) {
+                    return false;
+                }
+            }
+        }*/
+        board[setX][setY] = player;
+        startGame = true;
+        return true;
     }
 
     /**
@@ -257,7 +323,30 @@ public class ConnectN {
      * @return true if the move succeeds, false on errer
      */
     public boolean setBoardAt(final Player player, final int setX) {
-        return false;
+        /**
+        //Fail: any board parameters remain uninitialized (width, height, N)
+        if (width == 0 || height == 0 || n  == 0) {
+            return false;
+        }
+        //Fail: the player is invalid
+        if (player.getName() == null) {
+            return false;
+        }
+         */
+        //Fail: the position is invalid for this board (out of range)
+        if (setX < 0 || setX > board.length - 1) {
+            return false;
+        }
+
+        int yC = 0;
+        while (board[setX][yC] != null && yC <= height - 1) {
+            if (yC == height - 1) {
+                return false;
+            }
+            yC++;
+        }
+        board[setX][yC] = player;
+        return true;
     }
 
     /**

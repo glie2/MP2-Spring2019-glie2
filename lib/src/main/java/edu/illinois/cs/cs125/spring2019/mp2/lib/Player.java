@@ -10,6 +10,7 @@ package edu.illinois.cs.cs125.spring2019.mp2.lib;
  */
 public class Player {
     /* Class variable that we used to generate a unique ID for each newly created player. */
+    /**Javadoc comment.*/
     private static int globalID = 0;
 
     /** This player's name. */

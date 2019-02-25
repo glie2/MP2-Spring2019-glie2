@@ -142,8 +142,19 @@ public class ConnectN {
      * @return true if the width was set successfully, false on error
      */
     public boolean setWidth(final int setWidth) {
+        int maxDimension;
+        if (setWidth > height) {
+            maxDimension = setWidth;
+        } else {
+            maxDimension = height;
+        }
+
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             return false;
+        } else if (n > maxDimension - 1) {
+            width = setWidth;
+            n = 0;
+            return true;
         } else {
             width = setWidth;
             return true;
@@ -162,8 +173,18 @@ public class ConnectN {
      * @return true if the height was set successfully, false on error
      */
     public boolean setHeight(final int setHeight) {
+        int maxDimension;
+        if (width > setHeight) {
+            maxDimension = width;
+        } else {
+            maxDimension = setHeight;
+        }
         if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             return false;
+        } else if (n > maxDimension - 1) {
+            height = setHeight;
+            n = 0;
+            return true;
         } else {
             height = setHeight;
             return true;
@@ -183,7 +204,22 @@ public class ConnectN {
      * @return true if N was set successfully, false otherwise
      */
     public boolean setN(final int newN) {
-        return false;
+        int maxDimension;
+        if (width > height) {
+            maxDimension = width;
+        } else {
+            maxDimension = height;
+        }
+        if (newN < MIN_N) {
+            return false;
+        } else if (width == 0 || height == 0) {
+            return false;
+        } else if (newN > maxDimension - 1) {
+            return false;
+        } else {
+            n = newN;
+            return true;
+        }
     }
 
     /**

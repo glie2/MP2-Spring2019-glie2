@@ -1,5 +1,5 @@
 package edu.illinois.cs.cs125.spring2019.mp2.lib;
-
+import java.util.Arrays;
 /**
  * A class that implements a Connect4-like game.
  */
@@ -23,7 +23,7 @@ public class ConnectN {
     private int n;
     /**Board.*/
     private Player[][] board;
-    /**Start game*/
+    /**Start game.*/
     private boolean startGame = false;
 
     /**
@@ -73,6 +73,7 @@ public class ConnectN {
         width = otherBoard.getWidth();
         height = otherBoard.getHeight();
         n = otherBoard.getN();
+        this.board = otherBoard.board;
     }
 
 
@@ -81,14 +82,23 @@ public class ConnectN {
      * @param setWidth the width of the new ConnectN instance to create
      * @param setHeight the height of the new ConnectN instance to create
      * @param setN the n value of the new Connect N instance to create
-     * @return
+     * @return the new ConnectN instance, or null if the parameters are invalid
      */
     public static ConnectN create(final int setWidth, final int setHeight, final int setN) {
+        int maxDimension;
+        if (setWidth > setHeight) {
+            maxDimension = setWidth;
+        } else {
+            maxDimension = setHeight;
+        }
+
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             return null;
         } else if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             return null;
         } else if (setN < MIN_N) {
+            return null;
+        } else if (setN > maxDimension - 1) {
             return null;
         } else {
             ConnectN instance = new ConnectN(setWidth, setHeight, setN);
@@ -102,16 +112,27 @@ public class ConnectN {
      * @param setWidth the width of the new ConnectN instances to create
      * @param setHeight the height of the new ConnectN instances to create
      * @param setN the n value of the new ConnectN instances to create
-     * @return
+     * @return an array of new ConnectN instances, or null if the parameters are invalid
      */
     public static ConnectN[] createMany(final int number, final int setWidth, final int setHeight, final int setN) {
         ConnectN[] arrayConnectN = new ConnectN[number];
 
+        int maxDimension;
+        if (setWidth > setHeight) {
+            maxDimension = setWidth;
+        } else {
+            maxDimension = setHeight;
+        }
+        if (number <= 0) {
+            return null;
+        }
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             return null;
         } else if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             return null;
         } else if (setN < MIN_N) {
+            return null;
+        } else if (setN > maxDimension - 1) {
             return null;
         }
 
@@ -121,11 +142,43 @@ public class ConnectN {
         return arrayConnectN;
     }
 
-    public static boolean compareBoards(ConnectN firstBoard, ConnectN secondBoard) {
+    /**
+     * Compare two ConnectN boards.
+     * @param firstBoard the first ConnectN board to compare
+     * @param secondBoard the second ConnectN board to compare
+     * @return true if the boards are the same, false otherwise
+     */
+    public static boolean compareBoards(final ConnectN firstBoard, final ConnectN secondBoard) {
+        if (firstBoard == null && secondBoard == null) {
+            return true;
+        } else if (firstBoard == null || secondBoard == null) {
+            return false;
+        }
+
+
+        if ((firstBoard.getWidth() == secondBoard.getWidth()) && (firstBoard.getHeight() == secondBoard.getHeight())) {
+            if (firstBoard.getN() == secondBoard.getN()) {
+                return Arrays.deepEquals(firstBoard.board, secondBoard.board);
+            }
+        }
         return false;
     }
-    public static boolean compareBoards(ConnectN... boards) {
-        return false;
+
+    /**
+     * Compare any number of ConnectN boards.
+     * @param boards the array of ConnectN boards to compare
+     * @return true if all passed boards are the same, false otherwise
+     */
+    public static boolean compareBoards(final ConnectN... boards) {
+
+        boolean test;
+        for (int i = 1; i < boards.length; i++) {
+            test = compareBoards(boards[0], boards[i]);
+            if (!test) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -356,8 +409,4 @@ public class ConnectN {
     public Player getWinner() {
         return null;
     }
-
-
-
-
 }

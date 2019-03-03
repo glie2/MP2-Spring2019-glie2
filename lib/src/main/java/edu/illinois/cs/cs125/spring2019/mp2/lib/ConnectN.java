@@ -25,6 +25,8 @@ public class ConnectN {
     private Player[][] board;
     /**Start game.*/
     private boolean startGame = false;
+    /**End game.*/
+    private boolean endGame = false;
 
     /**
      * Creates a new ConnectN board with a given width, height, and N value.
@@ -36,6 +38,13 @@ public class ConnectN {
         width = setWidth;
         height = setHeight;
         n = setN;
+        int maxDimension;
+        if (setWidth > setHeight) {
+            maxDimension = setWidth;
+        } else {
+            maxDimension = setHeight;
+        }
+        System.out.println("Constructor  :  width: " + width + " height : " + height + " n : " + n);
         if (setWidth < MIN_WIDTH || setWidth > MAX_WIDTH) {
             width = 0;
             n = 0;
@@ -43,10 +52,13 @@ public class ConnectN {
         if (setHeight < MIN_HEIGHT || setHeight > MAX_HEIGHT) {
             height = 0;
         }
-        if (setN < MIN_N || setN > setWidth - 1 || setN > setHeight - 1) {
+        //if (setN > MaxDimension - 1);
+        if (setN < MIN_N || setN > maxDimension - 1) {
             n = 0;
+            System.out.println("Constructor  :  width: " + width + " height : " + height + " n : " + n);
         }
         board = new Player[width][height];
+        endGame = false;
     }
 
     /**
@@ -300,8 +312,8 @@ public class ConnectN {
         }
         Player[][] copy = new Player[this.getWidth()][this.getHeight()];
 
-        for (int i = 0; i < width - 1; i++) {
-            for (int j = 0; j < height - 1; j++) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
                 if (this.getBoardAt(i, j) != null) {
                     Player c1 = new Player(this.getBoardAt(i, j));
                     copy[i][j] = c1;
@@ -335,6 +347,9 @@ public class ConnectN {
      * @return true if the move succeeds, false on error
      */
     public boolean setBoardAt(final Player player, final int setX, final int setY) {
+        if (endGame) {
+            return false;
+        }
         //Fail: any board parameters remain uninitialized (width, height, N)
         if (width == 0 || height == 0 || n  == 0) {
             return false;
@@ -354,6 +369,7 @@ public class ConnectN {
         if (setY == 0) {
             board[setX][setY] = player;
             startGame = true;
+            return true;
         } else if (board[setX][setY - 1] == null) {
             return false;
         }
@@ -382,6 +398,9 @@ public class ConnectN {
             return false;
         }
          */
+        if (endGame) {
+            return false;
+        }
         //Fail: the player is invalid
         if (player.getName() == null) {
             return false;
@@ -407,6 +426,67 @@ public class ConnectN {
      * @return the winner of the game, or null if the game has not ended
      */
     public Player getWinner() {
+        //Check for null
+        if (board == null || width == 0 || height == 0 || n == 0) {
+            return null;
+        }
+        int counter = 0;
+
+        //Check rows
+        if (height > n) {
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[i].length - n; j++) {
+
+                    //Check if a player is present
+                    if (board[i][j] != null) {
+
+                        for (int k = j; k < j + n; k++) {
+                            //Check if next one is the same player
+                            if (board[i][j].equals(board[i][k])) {
+                                counter++;
+                                if (counter == n) {
+                                    endGame = true;
+                                    board[i][j].addScore();
+                                    return board[i][j];
+                                }
+                            } else {
+                                counter = 0;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        counter = 0;
+        //Check rows
+        if (board.length > n) {
+            for (int i = 0; i < board[0].length; i++) {
+                for (int j = 0; j < board.length - n; j++) {
+
+                    //Check if player is present
+                    if (board[j][i] != null) {
+
+                        for (int k = j; k < j + n; k++) {
+                            //Check if next one is same as player
+                            if (board[j][i].equals(board[k][i])) {
+                                counter++;
+                                if (counter == n) {
+                                    endGame = true;
+                                    board[j][i].addScore();
+                                    return board[j][i];
+                                }
+                            } else {
+                                counter = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return null;
     }
 }

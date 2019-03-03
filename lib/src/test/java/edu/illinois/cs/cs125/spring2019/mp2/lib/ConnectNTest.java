@@ -59,7 +59,6 @@ public class ConnectNTest {
         Assert.assertFalse(invalidBoardWidth, board.setWidth(2019));
         Assert.assertEquals(invalidReset, 13, board.getWidth());
 
-
         /*
          * Make sure width still works.
          */
@@ -417,6 +416,7 @@ public class ConnectNTest {
                 Assert.assertNull(nullGet, board.getBoardAt(x, y));
             }
         }
+
         Assert.assertNull(nullGet, board.getBoardAt(0, 0));
         Assert.assertTrue(validSet, board.setBoardAt(player, 0, 0));
         Assert.assertEquals(validGet, player, board.getBoardAt(0, 0));
@@ -632,10 +632,17 @@ public class ConnectNTest {
         /*
          * Test a game with no winner.
          */
+
+        System.out.println("My error test starts here");
         board = new ConnectN(8, 6, 7);
+        System.out.println("setWidth : " + board.getWidth() + " setHeight : " + board.getHeight() + " setN : " + board.getN());
+        //Assert.assertTrue(board.setBoardAt(chuchu, 0, 0));
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 6; y++) {
+                System.out.println("Inside of for loop");
                 if (x % 2 == 0) {
+                    System.out.println("Inside of if statement and X: " + x + "and y: " + y);
+                    System.out.println("Inside of if statement and width: " + board.getWidth() + " height : " + board.getHeight() + " n : " + board.getN());
                     Assert.assertTrue(board.setBoardAt(chuchu, x, y));
                     Assert.assertEquals(chuchu, board.getBoardAt(x, y));
                 } else {

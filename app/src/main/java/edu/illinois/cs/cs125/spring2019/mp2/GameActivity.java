@@ -306,6 +306,7 @@ public final class GameActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * Gets the array index for the player who is not currently to move.
      *
@@ -369,6 +370,17 @@ public final class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * If the tile at x,y is clicked, and the play is successful, then the game should update.
+     * @param x x position clicked on
+     * @param y y position clicked on
+     */
+    void tileClicked(final int x, final int y) {
+        if (tryPlayAt(x, y)) {
+            updateDisplay();
+        }
+    }
+
+    /**
      * Updates the UI according to the game state.
      */
     void updateDisplay() {
@@ -405,6 +417,7 @@ public final class GameActivity extends AppCompatActivity {
              */
             toPlayLabels[playerToMove].setVisibility(View.VISIBLE);
             toPlayLabels[getPlayerNotMoving()].setVisibility(View.GONE);
+            winnerLabel.setVisibility(View.GONE);
         } else {
             /*
              * The game is over!
@@ -412,9 +425,13 @@ public final class GameActivity extends AppCompatActivity {
              * Make all the to play labels invisible, make the winner label visible, set the text to "(Player's
              * name) wins!", and set the text color of the winner label to the appropriate color depending on who won.
              */
+
             for (View v : toPlayLabels) {
                 v.setVisibility(View.GONE);
             }
+            winnerLabel.setVisibility(View.VISIBLE);
+            winnerLabel.setText(winner.getName() + " wins!");
+            winnerLabel.setTextColor(getColor(playerColorIds[getPlayerIndex(winner)]));
         }
 
         // Update player scores.

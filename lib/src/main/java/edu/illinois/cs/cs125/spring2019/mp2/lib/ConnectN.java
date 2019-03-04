@@ -356,10 +356,12 @@ public class ConnectN {
         if (width == 0 || height == 0 || n  == 0) {
             return false;
         }
+        /**
         //Fail: the player is invalid
         if (player.getName() == null) {
             return false;
         }
+         */
         //Fail: the position is invalid for this board (out of range)
         if ((setX < 0 || setX > board.length - 1) || (setY < 0 || setY > board[0].length - 1)) {
             return false;
